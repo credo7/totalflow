@@ -9,11 +9,12 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
+    "typecheck": "yarn workspaces run typecheck",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "eslint-config-custom": "*",
+    "@packages/eslint-config-custom": "*",
     "prettier": "latest",
     "turbo": "latest"
   },
