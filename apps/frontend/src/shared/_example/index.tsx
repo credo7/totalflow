@@ -1,12 +1,4 @@
 import React from 'react';
 
-interface SharedExampleProps {
-}
-
-export const SharedExample: React.FC<SharedExampleProps> = ({}) => {
-    return (
-        <div>
-            SharedExample
-        </div>
-    );
-};
+// eslint-disable-next-line index/only-import-export
+export const SharedExample: React.FC = () => <div>SharedExample</div>;

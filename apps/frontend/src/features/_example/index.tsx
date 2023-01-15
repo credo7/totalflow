@@ -1,12 +1,4 @@
 import React from 'react';
 
-interface FeatureExampleProps {
-}
-
-export const FeatureExample: React.FC<FeatureExampleProps> = ({}) => {
-    return (
-        <div>
-            FeatureExample
-        </div>
-    );
-};
+// eslint-disable-next-line index/only-import-export
+export const FeatureExample: React.FC = () => <div>FeatureExample</div>;

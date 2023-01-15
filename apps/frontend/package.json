@@ -7,22 +7,24 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --project ./tsconfig.json --noEmit --skipLibCheck",
-    "lint": "next lint"
+    "lint": "eslint --max-warnings=0 \"**/*.{ts,tsx,js,jsx}\"",
+    "lint:next": "next lint"
   },
   "dependencies": {
+    "@packages/ui": "*",
     "next": "^13.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@packages/ui": "*"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "eslint": "7.32.0",
     "@packages/eslint-config-custom": "*",
     "@packages/shared-tsconfig": "*",
+    "@packages/prettier-config": "*",
     "@types/node": "^17.0.12",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
+    "eslint": "7.32.0",
     "typescript": "^4.5.3"
   }
 }

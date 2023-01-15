@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "typecheck": "tsc --project ./tsconfig.json --noEmit --skipLibCheck",
-    "lint": "TIMING=1 eslint \"**/*.ts*\""
+    "lint": "eslint --max-warnings=0 \"**/*.{ts,tsx,js,jsx}\"",
+    "lint:next": "next lint"
   },
   "devDependencies": {
     "@types/react": "^17.0.37",

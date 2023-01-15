@@ -1,0 +1,16 @@
+module.exports = {
+  tabWidth: 4,
+  semi: true,
+  singleQuote: true,
+  parser: "typescript",
+  arrowParens: "always",
+  printWidth: 100,
+  jsxBracketSameLine: false,
+  jsxSingleQuote: false,
+  useTabs: false,
+  trailingComma: "all",
+  bracketSpacing: false,
+  bracketSameLine: false,
+  importOrder: ["^react(.*)", "@packages/(.*)", "@(.*)", "^[./]"],
+  importOrderSeparation: true,
+};
