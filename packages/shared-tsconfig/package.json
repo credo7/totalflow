@@ -2,9 +2,6 @@
   "name": "@packages/shared-tsconfig",
   "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "typecheck": "exit 0"
-  },
   "files": [
     "base.json",
     "nextjs.json",

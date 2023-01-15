@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --project ./tsconfig.json --noEmit --skipLibCheck",
-    "lint": "next lint"
+    "lint": "eslint --max-warnings=0 \"**/*.{ts,tsx,js,jsx}\"",
+    "lint:next": "next lint"
   },
   "dependencies": {
     "next": "^13.1.1",
@@ -20,6 +21,7 @@
     "eslint": "7.32.0",
     "@packages/eslint-config-custom": "*",
     "@packages/shared-tsconfig": "*",
+    "@packages/prettier-config": "*",
     "@types/node": "^17.0.12",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
