@@ -1,0 +1,135 @@
+name: ci-workflow
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  audit-commits-job:
+    name: Audit commits
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check for commit name
+        shell: bash
+        run: |
+          exit 0
+          set -e
+
+          COMMITS='${{ toJSON(github.event.commits) }}'
+          MATCH_REGEX='^\[#[0-9]+\]: .*'
+
+          echo "[debug COMMITS TODO] '$COMMITS'"
+
+          if [[ $COMMITS =~ "null" ]]; then
+            echo "No commits found. Exiting..."
+            exit 0
+          fi
+
+          PARSED_COMMITS=$(echo -n "$COMMITS" | jq -r ".[].message" | sort -u)
+
+          echo "[debug PARSED_COMMITS TODO] '$PARSED_COMMITS'"
+
+          echo "$PARSED_COMMITS" | while IFS= read -r raw_line; do
+            line=$(echo "$raw_line" | tr -d "\r\n")
+
+            # Ignore empty lines.
+            if [[ -z "$line" ]]; then
+                continue
+            elif [[ "$line" =~ $MATCH_REGEX ]]; then
+                echo "Commit message: '$line' ✅"
+            else
+                echo "Commit message: '$line' ❌"
+                echo "Commit message must match '$MATCH_REGEX' regex"
+                exit 1
+            fi
+          done
+
+  audit-branch-job:
+    name: Audit branch
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check for branch name
+        shell: bash
+        run: |
+          set -e
+
+          BRANCH_NAME='${{ github.head_ref }}'
+          MATCH_REGEX='^(feat|fix|hotfix)\/[0-9]+-.*'
+
+          if [[ "$BRANCH_NAME" =~ $MATCH_REGEX ]]; then
+            echo "Branch name: '$BRANCH_NAME' ✅"
+          else
+            echo "Branch name: '$BRANCH_NAME' ❌"
+            echo "Branch name must match '$MATCH_REGEX' regex"
+            exit 1
+          fi
+
+  install-job:
+    name: Install dependencies
+    needs: [audit-commits-job, audit-branch-job]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+  typecheck-job:
+    name: Typecheck job
+    needs: install-job
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Typecheck
+        run: yarn typecheck
+
+  lint-job:
+    name: Lint job
+    needs: install-job
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Lint
+        run: yarn lint
+
+  build-job:
+    name: Build job
+    needs: install-job
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Build
+        run: yarn build
