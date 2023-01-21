@@ -1,0 +1,120 @@
+name: ci-workflow
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  audit-commits-job:
+    name: Audit commits
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check for commit name
+        uses: gsactions/commit-message-checker@v2
+        with:
+          pattern: '^\[#[0-9]+\]: .*'
+          error: 'Commit message must match pattern'
+          excludeDescription: 'true'
+          excludeTitle: 'true'
+          checkAllCommitMessages: 'true'
+          accessToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check for linked issue
+        uses: gsactions/commit-message-checker@v2
+        with:
+          pattern: '^(Resolves|Fixes):? #[0-9]+\s*$'
+          excludeTitle: 'true'
+          error: 'You need to add "Resolves|Fixes #<issue number>" to PR description'
+
+  audit-branch-job:
+    name: Audit branch
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check for branch name
+        shell: bash
+        run: |
+          set -e
+
+          BRANCH_NAME='${{ github.head_ref }}'
+          MATCH_REGEX='^(feat|fix|hotfix)\/[0-9]+-.*'
+
+          if [[ "$BRANCH_NAME" =~ $MATCH_REGEX ]]; then
+            echo "Branch name: '$BRANCH_NAME' ✅"
+          else
+            echo "Branch name: '$BRANCH_NAME' ❌"
+            echo "Branch name must match '$MATCH_REGEX' pattern"
+            exit 1
+          fi
+
+  install-job:
+    name: Install dependencies
+    needs: [audit-commits-job, audit-branch-job]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+  typecheck-job:
+    name: Typecheck job
+    needs: install-job
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Typecheck
+        run: yarn typecheck
+
+  lint-job:
+    name: Lint job
+    needs: install-job
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Lint
+        run: yarn lint
+
+  build-job:
+    name: Build job
+    needs: install-job
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      - uses: c-hive/gha-yarn-cache@v2
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Build
+        run: yarn build
