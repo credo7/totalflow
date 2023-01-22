@@ -1,73 +1,40 @@
-# Turborepo starter
+# TotalFlow Monorepo
 
-This is an official Yarn v1 starter turborepo.
+## Backend Services
 
-## What's inside?
+### Users service
 
-This turborepo uses [Yarn](https://classic.yarnpkg.com/) as a package manager. It includes the following packages/apps:
+#### Responsibilities:
+- register
+- login
+- tokens handling
+- information about user
 
-### Apps and Packages
+### Mail service
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `frontend`: another [Next.js](https://nextjs.org/) app
-- `ui`: a stub React component library shared by both `frontend` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `shared-tsconfig`: `tsconfig.json`s used throughout the monorepo
+#### Responsibilities:
+- Sending mails
+- No external api, only server-side services can interact with it
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## Development
 
-### Utilities
-
-This turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
+1. Setup `.env` file (Don't forget to fill secret fields)
 ```
-cd my-turborepo
-yarn run build
+USERS_POSTGRES_USER=postgres
+USERS_POSTGRES_PASSWORD=***
+USERS_POSTGRES_DB=users_db
+USERS_POSTGRES_PORT=5432
+
+USERS_SERVICE_PORT=3000
+USERS_POSTGRES_HOST=users_db
+
+JWT_ACCESS_TOKEN_SECRET=***
+JWT_ACCESS_TOKEN_EXPIRATION_TIME=86400
+JWT_REFRESH_TOKEN_SECRET=***
+JWT_REFRESH_TOKEN_EXPIRATION_TIME=604800
+
+GOOGLE_CLIENT_ID=***
+GOOGLE_CLIENT_SECRET=***
+
+DATABASE_URL=postgresql://${USERS_POSTGRES_USER}:${USERS_POSTGRES_PASSWORD}@${USERS_POSTGRES_HOST}:${USERS_POSTGRES_PORT}/${USERS_POSTGRES_DB}
 ```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-yarn run dev
-```
-
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
