@@ -1,29 +1,28 @@
 import * as bcrypt from 'bcrypt';
-import {ProducerService} from 'kafka/producer.service';
-import {CreateUserDto} from 'users/dto/create-user.dto';
-import {User} from 'users/users.model';
-import {UsersService} from 'users/users.service';
+// import {ProducerService} from 'kafka/producer.service';
+import {PrismaService} from 'prisma/prisma.service';
 
 import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
+import {User} from '@prisma/client';
+
+import {TokensDto, AuthDto} from './dto';
+import {RefreshProps, UpsertUserRefreshTokenProps} from './types';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: UsersService,
-        private jwtService: JwtService,
-        private producerService: ProducerService,
-    ) {}
+    constructor(private jwtService: JwtService, private prisma: PrismaService) {}
+    // private producerService: ProducerService,
 
-    async login(userDto: CreateUserDto) {
+    async login(userDto: AuthDto): Promise<TokensDto> {
         const user = await this.validateUser(userDto);
         const tokens = await this.getTokens(user);
-        await this.usersService.setCurrentRefreshToken(user.id, tokens.refreshToken);
+        await this.upsertUserRefreshToken({id: user.id, refreshToken: tokens.refreshToken});
         return tokens;
     }
 
-    async registration(userDto: CreateUserDto) {
-        const candidate = await this.usersService.getUserByEmail(userDto.email);
+    async register(authDto: AuthDto): Promise<TokensDto> {
+        const candidate = await this.prisma.user.findUnique({where: {email: authDto.email}});
 
         if (candidate) {
             throw new HttpException(
@@ -32,51 +31,62 @@ export class AuthService {
             );
         }
 
-        const hashPassword = await bcrypt.hash(userDto.password, 5);
+        const hashPassword = await bcrypt.hash(authDto.password, 5);
 
-        const user = await this.usersService.createUser({
-            ...userDto,
-            password: hashPassword,
+        const user = await this.prisma.user.create({
+            data: {
+                email: authDto.email,
+                password: hashPassword,
+            },
         });
 
         const tokens = await this.getTokens(user);
 
-        await this.usersService.setCurrentRefreshToken(user.id, tokens.refreshToken);
+        await this.upsertUserRefreshToken({id: user.id, refreshToken: tokens.refreshToken});
 
-        await this.producerService.produce({
-            topic: 'registration',
-            messages: [
-                {
-                    value: userDto.email,
-                },
-            ],
-        });
+        // await this.producerService.produce({
+        //     topic: 'register',
+        //     messages: [
+        //         {
+        //             value: authDto.email,
+        //         },
+        //     ],
+        // });
 
         return tokens;
     }
 
-    async refresh(id: number, oldRefreshToken: string) {
-        const user = await this.usersService.findOne(id);
+    upsertUserRefreshToken = ({id, refreshToken}: UpsertUserRefreshTokenProps): Promise<User> =>
+        this.prisma.user.update({
+            where: {id},
+            data: {refreshToken},
+        });
 
-        const isRefreshTokenMatching = await bcrypt.compare(oldRefreshToken, user.hashRefreshToken);
+    async refresh({id, oldRefreshToken}: RefreshProps): Promise<TokensDto> {
+        const user = await this.prisma.user.findUnique({where: {id}});
+
+        if (!user?.refreshToken) {
+            throw new HttpException('No refresh token found', HttpStatus.BAD_REQUEST);
+        }
+
+        const isRefreshTokenMatching = oldRefreshToken === user.refreshToken;
 
         const isValid = await this.jwtService.verify(oldRefreshToken, {
             secret: process.env.JWT_REFRESH_TOKEN_SECRET,
         });
 
-        if (user && isRefreshTokenMatching && isValid) {
-            const tokens = await this.getTokens(user);
-
-            this.usersService.setCurrentRefreshToken(user.id, tokens.refreshToken);
-
-            return tokens;
+        if (!user || !isRefreshTokenMatching || !isValid) {
+            throw new HttpException('Incorrect refreshToken', HttpStatus.BAD_REQUEST);
         }
+        const tokens = await this.getTokens(user);
 
-        throw new HttpException('Incorrect refreshToken', HttpStatus.BAD_REQUEST);
+        await this.upsertUserRefreshToken({id: user.id, refreshToken: tokens.refreshToken});
+
+        return tokens;
     }
 
-    private async validateUser(userDto: CreateUserDto) {
-        const user = await this.usersService.getUserByEmail(userDto.email);
+    private async validateUser(userDto: AuthDto): Promise<User> {
+        const user = await this.prisma.user.findUnique({where: {email: userDto.email}});
 
         if (!user) {
             throw new UnauthorizedException({
@@ -86,16 +96,16 @@ export class AuthService {
 
         const passwordEquals = await bcrypt.compare(userDto.password, user.password);
 
-        if (passwordEquals) {
-            return user;
+        if (!passwordEquals) {
+            throw new UnauthorizedException({
+                message: 'Incorrect password',
+            });
         }
 
-        throw new UnauthorizedException({
-            message: 'Incorrect password',
-        });
+        return user;
     }
 
-    private async getTokens(user: User) {
+    private async getTokens(user: User): Promise<TokensDto> {
         const payload = {id: user.id, email: user.email};
 
         const accessToken = this.jwtService.sign(payload, {

@@ -1,14 +1,15 @@
-import {CreateUserDto} from 'users/dto/create-user.dto';
+import {AuthDto} from 'auth/dto/auth.dto';
 
-import {Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, HttpCode, HttpStatus, Post, UseGuards} from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 
 import {AuthService} from './auth.service';
-import {TokensDto} from './dto/tokens.dto';
-import {JwtAuthGuard} from './jwt-auth.guard';
-import type {RefreshBody, RefreshRequest} from './types';
+import {GetUser} from './decorator';
+import {TokensDto} from './dto';
+import {JwtGuard} from './guard';
+import type {RefreshBody} from './types';
 
-@ApiTags('Авторизация')
+@ApiTags('Authorization')
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
@@ -17,24 +18,24 @@ export class AuthController {
     @ApiResponse({status: 200, type: TokensDto})
     @HttpCode(HttpStatus.OK)
     @Post('/login')
-    login(@Body() userDto: CreateUserDto) {
-        return this.authService.login(userDto);
+    login(@Body() authDto: AuthDto) {
+        return this.authService.login(authDto);
     }
 
-    @ApiOperation({summary: 'Registration'})
+    @ApiOperation({summary: 'Register'})
     @ApiResponse({status: 201, type: TokensDto})
     @HttpCode(HttpStatus.CREATED)
-    @Post('/registration')
-    registration(@Body() userDto: CreateUserDto) {
-        return this.authService.registration(userDto);
+    @Post('/register')
+    register(@Body() authDto: AuthDto) {
+        return this.authService.register(authDto);
     }
 
     @ApiOperation({summary: 'Refresh token'})
     @ApiResponse({status: 200, type: TokensDto})
     @HttpCode(HttpStatus.OK)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtGuard)
     @Post('/refresh')
-    refresh(@Body() data: RefreshBody, @Req() req: RefreshRequest) {
-        return this.authService.refresh(req.user.id, data.refreshToken);
+    refresh(@Body() {refreshToken}: RefreshBody, @GetUser('id') id: number) {
+        return this.authService.refresh({id, oldRefreshToken: refreshToken});
     }
 }
