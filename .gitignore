@@ -3,8 +3,12 @@
 .vscode
 .idea
 
+volumes
+dist
+
 tsconfig.tsbuildinfo
 ts-dist
+.env
 
 # dependencies
 node_modules
