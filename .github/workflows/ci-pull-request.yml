@@ -5,6 +5,10 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   audit-job:
     uses: credo7/totalflow/.github/workflows/ci-audit.yml@master
