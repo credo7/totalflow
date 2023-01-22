@@ -18,6 +18,8 @@ module.exports = {
     },
     plugins: ['@typescript-eslint', 'react', 'react-hooks', 'index', 'prettier'],
     rules: {
+        '@typescript-eslint/no-explicit-any': ['error'],
+        '@typescript-eslint/no-unused-vars': ['error'],
         'prettier/prettier': 'error',
         'import/prefer-default-export': 'off',
         'import/extensions': [
