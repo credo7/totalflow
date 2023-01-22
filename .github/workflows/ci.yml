@@ -15,6 +15,7 @@ permissions:
 jobs:
   audit-commits-job:
     name: Audit commits
+    if: github.event.pull_request.merged != 'true'
     runs-on: ubuntu-22.04
     steps:
       - name: Check for commit name
@@ -26,6 +27,12 @@ jobs:
           excludeTitle: 'true'
           checkAllCommitMessages: 'true'
           accessToken: ${{ secrets.GITHUB_TOKEN }}
+
+  audit-pr-job:
+    name: Audit PR
+    if: github.event.pull_request.merged != 'true'
+    runs-on: ubuntu-22.04
+    steps:
       - name: Check for linked issue
         uses: gsactions/commit-message-checker@v2
         with:
@@ -35,6 +42,7 @@ jobs:
 
   audit-branch-job:
     name: Audit branch
+    if: github.event.pull_request.merged != 'true'
     runs-on: ubuntu-22.04
     steps:
       - name: Check for branch name
@@ -55,7 +63,7 @@ jobs:
 
   install-job:
     name: Install dependencies
-    needs: [audit-commits-job, audit-branch-job]
+    needs: [audit-commits-job, audit-branch-job, audit-pr-job]
     runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
