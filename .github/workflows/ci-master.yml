@@ -1,0 +1,10 @@
+name: ci-master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  checks-job:
+    uses: credo7/totalflow/.github/workflows/ci-checks.yml@master

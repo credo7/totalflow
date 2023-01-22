@@ -1,0 +1,14 @@
+name: ci-pull-request
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  audit-job:
+    uses: credo7/totalflow/.github/workflows/ci-audit.yml@master
+
+  checks-job:
+    needs: [ audit-job ]
+    uses: credo7/totalflow/.github/workflows/ci-checks.yml@master
