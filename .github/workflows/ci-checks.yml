@@ -19,7 +19,7 @@ jobs:
         run: yarn --frozen-lockfile
 
   typecheck-job:
-    name: Typecheck job
+    name: Typecheck
     needs: install-job
     runs-on: ubuntu-22.04
     steps:
@@ -36,7 +36,7 @@ jobs:
         run: yarn typecheck
 
   lint-job:
-    name: Lint job
+    name: Lint
     needs: install-job
     runs-on: ubuntu-22.04
     steps:
@@ -53,7 +53,7 @@ jobs:
         run: yarn lint
 
   build-job:
-    name: Build job
+    name: Build
     needs: install-job
     runs-on: ubuntu-22.04
     steps:
