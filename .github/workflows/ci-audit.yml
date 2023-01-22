@@ -1,0 +1,55 @@
+name: ci-audit
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  audit-commits-job:
+    name: Audit commits
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check for commit name
+        uses: gsactions/commit-message-checker@v2
+        with:
+          pattern: '^\[#[0-9]+\]: .*'
+          error: 'Commit message must match pattern'
+          excludeDescription: 'true'
+          excludeTitle: 'true'
+          checkAllCommitMessages: 'true'
+          accessToken: ${{ secrets.GITHUB_TOKEN }}
+
+  audit-pr-job:
+    name: Audit PR
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check for linked issue
+        uses: gsactions/commit-message-checker@v2
+        with:
+          pattern: '^(Resolves|Fixes):? #[0-9]+\s*$'
+          excludeTitle: 'true'
+          error: 'You need to add "Resolves|Fixes #<issue number>" to PR description'
+
+  audit-branch-job:
+    name: Audit branch
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check for branch name
+        shell: bash
+        run: |
+          set -e
+
+          BRANCH_NAME='${{ github.head_ref }}'
+          MATCH_REGEX='^(feat|fix|hotfix)\/[0-9]+-.*'
+
+          if [[ "$BRANCH_NAME" =~ $MATCH_REGEX ]]; then
+            echo "Branch name: '$BRANCH_NAME' ✅"
+          else
+            echo "Branch name: '$BRANCH_NAME' ❌"
+            echo "Branch name must match '$MATCH_REGEX' pattern"
+            exit 1
+          fi
+
