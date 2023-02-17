@@ -3,6 +3,9 @@
 .vscode
 .idea
 
+volumes
+dist
+
 tsconfig.tsbuildinfo
 ts-dist
 
