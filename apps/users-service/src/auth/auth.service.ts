@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-// import {ProducerService} from 'kafka/producer.service';
+import {ProducerService} from 'kafka/producer.service';
 import {PrismaService} from 'prisma/prisma.service';
 
 import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
@@ -11,8 +11,11 @@ import {RefreshProps, UpsertUserRefreshTokenProps} from './types';
 
 @Injectable()
 export class AuthService {
-    constructor(private jwtService: JwtService, private prisma: PrismaService) {}
-    // private producerService: ProducerService,
+    constructor(
+        private jwtService: JwtService,
+        private prisma: PrismaService,
+        private producerService: ProducerService,
+    ) {}
 
     async login(userDto: AuthDto): Promise<TokensDto> {
         const user = await this.validateUser(userDto);
@@ -44,14 +47,14 @@ export class AuthService {
 
         await this.upsertUserRefreshToken({id: user.id, refreshToken: tokens.refreshToken});
 
-        // await this.producerService.produce({
-        //     topic: 'register',
-        //     messages: [
-        //         {
-        //             value: authDto.email,
-        //         },
-        //     ],
-        // });
+        await this.producerService.produce({
+            topic: 'register',
+            messages: [
+                {
+                    value: authDto.email,
+                },
+            ],
+        });
 
         return tokens;
     }

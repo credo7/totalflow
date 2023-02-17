@@ -1,0 +1,73 @@
+version: '3'
+services:
+  users_db:
+    restart: always
+    container_name: users_db
+    image: postgres:11.13
+    environment:
+      - POSTGRES_USER=${USERS_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${USERS_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${USERS_POSTGRES_DB}
+      - TZ=Europe/Moscow
+      - PGTZ=Europe/Moscow
+    volumes:
+      - ./volumes/users-db/data:/var/lib/postgresql/data
+    ports:
+      - ${USERS_POSTGRES_PORT}:5432
+    command: postgres -c stats_temp_directory=/tmp
+  users_service:
+    restart: always
+    container_name: users-service
+    build: ./apps/users-service
+    environment:
+      - PORT=${USERS_SERVICE_PORT}
+      - POSTGRES_HOST=${USERS_POSTGRES_HOST}
+      - POSTGRES_USER=${USERS_POSTGRES_USER}
+      - POSTGRES_DB=${USERS_POSTGRES_DB}
+      - POSTGRES_PASSWORD=${USERS_POSTGRES_PASSWORD}
+      - POSTGRES_PORT=5432
+      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+      - JWT_ACCESS_TOKEN_EXPIRATION_TIME=${JWT_ACCESS_TOKEN_EXPIRATION_TIME}
+      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - JWT_REFRESH_TOKEN_EXPIRATION_TIME=${JWT_REFRESH_TOKEN_EXPIRATION_TIME}
+      - DATABASE_URL=${DATABASE_URL}
+    env_file:
+      - .env
+    ports:
+      - ${USERS_SERVICE_PORT}:${USERS_SERVICE_PORT}
+    depends_on:
+      - users_db
+      - kafka
+  mail_service:
+    restart: always
+    container_name: mail-service
+    build: ./apps/mail-service
+    environment:
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
+      - PORT=${MAIL_SERVICE_PORT}
+    ports:
+      - ${MAIL_SERVICE_PORT}:${MAIL_SERVICE_PORT}
+    depends_on:
+      - kafka
+  zookeeper:
+    restart: always
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+  kafka:
+    restart: always
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - 9092:9092
+    hostname: 'kafka-internal.io'
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka-internal.io
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
