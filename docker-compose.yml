@@ -39,37 +39,16 @@ services:
       - ${USERS_SERVICE_PORT}:${USERS_SERVICE_PORT}
     depends_on:
       - users_db
-#      - kafka
-#  mail_service:
-#    restart: always
-#    container_name: mail-service
-#    build: ./apps/mail-service
-#    environment:
-#      - MAIL_HOST=${MAIL_HOST}
-#      - MAIL_PORT=${MAIL_PORT}
-#      - MAIL_USER=${MAIL_USER}
-#      - MAIL_PASSWORD=${MAIL_PASSWORD}
-#      - MAIL_FROM=${MAIL_FROM}
-#      - PORT=${MAIL_SERVICE_PORT}
-#    ports:
-#      - ${MAIL_SERVICE_PORT}:${MAIL_SERVICE_PORT}
-#    depends_on:
-#      - kafka
-#  zookeeper:
-#    restart: always
-#    image: wurstmeister/zookeeper
-#    container_name: zookeeper
-#    ports:
-#      - 2181:2181
-#    environment:
-#      - ZOOKEEPER_CLIENT_PORT=2181
-#  kafka:
-#    restart: always
-#    image: wurstmeister/kafka
-#    container_name: kafka
-#    ports:
-#      - 9092:9092
-#    hostname: 'kafka-internal.io'
-#    environment:
-#      KAFKA_ADVERTISED_HOST_NAME: kafka-internal.io
-#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  mail_service:
+    restart: always
+    container_name: mail-service
+    build: ./apps/mail-service
+    environment:
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
+      - PORT=${MAIL_SERVICE_PORT}
+    ports:
+      - ${MAIL_SERVICE_PORT}:${MAIL_SERVICE_PORT}
