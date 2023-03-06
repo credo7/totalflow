@@ -1,1 +1,1 @@
-export * from './StyledComponentProvider';
+export * from './ThemeAndGlobalStylesProvider';

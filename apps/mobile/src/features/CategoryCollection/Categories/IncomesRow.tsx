@@ -1,19 +1,31 @@
 import {FC} from 'react';
-import {Text} from 'react-native';
+import {ScrollView} from 'react-native';
 
-interface IncomeRowProps {
-    category: string;
-    amount: number;
+import CategoryItem from './CategoryItem/CategoryItem';
+import ElementDistributor from './ElementsDistrubutor/ElementsDistrubutor';
+import {IncomeRow} from './types';
+
+interface IncomesRowProps {
+    items: IncomeRow[];
 }
 
-// type IncomeRowProps = {items: IncomeElement[]};
+// const ElementDistrubutor: FC = () => {
+//     return <View></View>;
+// };
 
-const IncomesRow: FC<IncomeRowProps[]> = (items) => (
-    <>
-        {items.map((item) => (
-            <Text>{item.category}</Text>
-        ))}
-    </>
+const IncomesRow: FC<IncomesRowProps> = ({items}) => (
+    <ScrollView
+        horizontal
+        pagingEnabled
+        style={{height: 100, marginTop: 20}}
+        showsHorizontalScrollIndicator={false}
+    >
+        <ElementDistributor>
+            {items.map((item, i) => (
+                <CategoryItem item={item} key={item.name + i} />
+            ))}
+        </ElementDistributor>
+    </ScrollView>
 );
 
 export default IncomesRow;

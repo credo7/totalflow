@@ -21,6 +21,20 @@ declare module 'styled-components' {
                 secondaryHover: string;
             };
         };
+        categories: {
+            sizes: {
+                name: string;
+                circle: string;
+                circleBorder: string;
+                smile: string;
+                amount: string;
+            };
+            colors: {
+                name: string;
+                circle: string;
+                circleBorder: string;
+            };
+        };
     }
 }
 
@@ -38,6 +52,20 @@ const theme = {
             secondaryMedium: '#5083F4',
             secondaryLight: '#7CA2F7',
             secondaryHover: '#3A78FF',
+        },
+    },
+    categories: {
+        sizes: {
+            name: '14px',
+            circle: '50px',
+            smile: '25px',
+            circleBorder: '3px',
+            amount: '14px',
+        },
+        colors: {
+            name: 'black',
+            circle: 'white',
+            circleBorder: '#E7EFFF',
         },
     },
 };
