@@ -2,8 +2,6 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-ENV DATABASE_URL="postgresql://postgres:root@users_db:5432/users_db"
-
 COPY ./package.json ./
 COPY ./yarn.lock ./
 COPY ./tsconfig.json ./

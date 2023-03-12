@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import {ProducerService} from 'kafka/producer.service';
 import {Profile} from 'passport-google-oauth20';
 import {PrismaService} from 'prisma/prisma.service';
 
@@ -11,7 +12,11 @@ import {RefreshProps, UpsertUserRefreshTokenProps} from './types';
 
 @Injectable()
 export class AuthService {
-    constructor(private jwtService: JwtService, private prisma: PrismaService) {}
+    constructor(
+        private jwtService: JwtService,
+        private prisma: PrismaService,
+        private producerService: ProducerService,
+    ) {}
 
     async login(userDto: AuthDto): Promise<TokensDto> {
         const user = await this.validateUser(userDto);
@@ -42,6 +47,15 @@ export class AuthService {
         const tokens = await this.getTokens(user);
 
         await this.upsertUserRefreshToken({id: user.id, refreshToken: tokens.refreshToken});
+
+        await this.producerService.produce({
+            topic: 'register',
+            messages: [
+                {
+                    value: authDto.email,
+                },
+            ],
+        });
 
         return tokens;
     }
