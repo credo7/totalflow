@@ -1,3 +1,5 @@
+import {KafkaModule} from 'kafka/kafka.module';
+
 import {Module} from '@nestjs/common';
 import {JwtModule} from '@nestjs/jwt';
 import {PassportModule} from '@nestjs/passport';
@@ -17,6 +19,7 @@ import {GoogleStrategy, JwtStrategy} from './straregy';
             },
         }),
         PassportModule.register({defaultStrategy: 'google'}),
+        KafkaModule,
     ],
     exports: [AuthService, JwtModule],
 })

@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "start:dev": "nest start --watch",
+    "start": "nest start --watch",
     "start:prod": "node dist/main",
     "typecheck": "tsc --project ./tsconfig.json --noEmit --skipLibCheck",
     "lint": "eslint --max-warnings=0 \"**/*.{ts,tsx,js,jsx}\""
@@ -24,14 +24,16 @@
     "bcrypt": "^5.0.1",
     "class-validator": "^0.13.2",
     "handlebars": "^4.7.7",
+    "kafkajs": "^2.2.4",
     "nodemailer": "^6.9.1",
+    "reflect-metadata": "^0.1.13",
     "swagger-ui-express": "^4.4.0"
   },
   "devDependencies": {
-    "@packages/eslint-config-custom": "*",
-    "@packages/shared-tsconfig": "*",
-    "@packages/prettier-config": "*",
     "@nestjs/cli": "^8.0.0",
+    "@packages/eslint-config-custom": "*",
+    "@packages/prettier-config": "*",
+    "@packages/shared-tsconfig": "*",
     "@types/express": "^4.17.13",
     "@types/node": "^16.0.0",
     "@types/nodemailer": "^6.4.7",
