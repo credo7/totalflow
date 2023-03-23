@@ -1,8 +1,9 @@
-import {FC} from 'react';
+import styled from 'styled-components/native';
 
-import BalancesRow from './Categories/BalancesRow';
-import ExpensesRow from './Categories/ExpensesRow';
-import IncomesRow from './Categories/IncomesRow';
+import {FC} from 'react';
+import {View} from 'react-native';
+
+import {ItemsRow} from './ItemsRow';
 
 interface DataEl {
     type: 'balance' | 'expense' | 'income';
@@ -27,12 +28,22 @@ const data: DataEl[] = [
     {type: 'expense', name: 'Service', amount: 105.93},
 ];
 
-const CategoryCollection: FC = () => (
-    <>
-        <IncomesRow items={data} />
-        <BalancesRow />
-        <ExpensesRow />
-    </>
-);
+const IncomeRow = styled(ItemsRow)``;
+const BalanceRow = styled(ItemsRow)``;
+const ExpenseRow = styled(ItemsRow)``;
+
+const CategoryCollection: FC = () => {
+    const incomes = data.filter((transaction) => transaction.type === 'income');
+    const balances = data.filter((transaction) => transaction.type === 'balance');
+    const expenses = data.filter((transaction) => transaction.type === 'expense');
+
+    return (
+        <View>
+            <IncomeRow items={incomes} />
+            <BalanceRow items={balances} />
+            <ExpenseRow items={expenses} />
+        </View>
+    );
+};
 
 export default CategoryCollection;

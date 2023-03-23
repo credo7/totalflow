@@ -19,20 +19,41 @@ declare module 'styled-components' {
                 secondaryMedium: string;
                 secondaryLight: string;
                 secondaryHover: string;
+                thirdLight: string;
+                error: string;
+                agreed: string;
+                active: string;
             };
         };
-        categories: {
-            sizes: {
-                name: string;
-                circle: string;
-                circleBorder: string;
-                smile: string;
-                amount: string;
+        features: {
+            categories: {
+                sizes: {
+                    name: string;
+                    circle: string;
+                    circleBorder: string;
+                    smile: string;
+                    amount: string;
+                };
+                colors: {
+                    name: string;
+                    circle: string;
+                    circleBorder: string;
+                };
             };
-            colors: {
-                name: string;
-                circle: string;
-                circleBorder: string;
+        };
+        components: {
+            customInput: {
+                sizes: {
+                    width: string;
+                    height: string | number;
+                };
+                border: {
+                    radius: string | number;
+                    width: {
+                        sm: string | number;
+                        md: string | number;
+                    };
+                };
             };
         };
     }
@@ -52,20 +73,41 @@ const theme = {
             secondaryMedium: '#5083F4',
             secondaryLight: '#7CA2F7',
             secondaryHover: '#3A78FF',
+            thirdLight: '#E7EFFF',
+            active: '#2464F1',
+            error: '#F46963',
+            agreed: '#3AB866',
         },
     },
-    categories: {
-        sizes: {
-            name: '14px',
-            circle: '50px',
-            smile: '25px',
-            circleBorder: '3px',
-            amount: '14px',
+    features: {
+        categories: {
+            sizes: {
+                name: '14px',
+                circle: '50px',
+                smile: '25px',
+                circleBorder: '3px',
+                amount: '14px',
+            },
+            colors: {
+                name: 'black',
+                circle: 'white',
+                circleBorder: '#E7EFFF',
+            },
         },
-        colors: {
-            name: 'black',
-            circle: 'white',
-            circleBorder: '#E7EFFF',
+    },
+    components: {
+        customInput: {
+            sizes: {
+                width: '100%',
+                height: '55px',
+            },
+            border: {
+                radius: '10px',
+                width: {
+                    sm: '1px',
+                    md: '2px',
+                },
+            },
         },
     },
 };

@@ -1,9 +1,9 @@
+import Navigation from './src/navigation';
 import ThemeAndGlobalStylesProvider from './src/providers/ThemeAndGlobalStylesProvider';
-import MainScreen from './src/screens/MainScreen';
 
 const App = () => (
     <ThemeAndGlobalStylesProvider>
-        <MainScreen />
+        <Navigation />
     </ThemeAndGlobalStylesProvider>
 );
 

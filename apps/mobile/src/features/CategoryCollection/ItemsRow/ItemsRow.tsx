@@ -3,17 +3,17 @@ import {ScrollView} from 'react-native';
 
 import CategoryItem from './CategoryItem/CategoryItem';
 import ElementDistributor from './ElementsDistrubutor/ElementsDistrubutor';
-import {IncomeRow} from './types';
 
-interface IncomesRowProps {
-    items: IncomeRow[];
+interface ItemsRowElement {
+    name: string;
+    amount: number;
 }
 
-// const ElementDistrubutor: FC = () => {
-//     return <View></View>;
-// };
+interface ItemsRowProps {
+    items: ItemsRowElement[];
+}
 
-const IncomesRow: FC<IncomesRowProps> = ({items}) => (
+export const ItemsRow: FC<ItemsRowProps> = ({items}) => (
     <ScrollView
         horizontal
         pagingEnabled
@@ -21,11 +21,11 @@ const IncomesRow: FC<IncomesRowProps> = ({items}) => (
         showsHorizontalScrollIndicator={false}
     >
         <ElementDistributor>
-            {items.map((item, i) => (
-                <CategoryItem item={item} key={item.name + i} />
+            {items.map((item) => (
+                <CategoryItem name={item.name} amount={item.amount} key={`ItemsRow ${item.name}`} />
             ))}
         </ElementDistributor>
     </ScrollView>
 );
 
-export default IncomesRow;
+// export default ItemsRow;
